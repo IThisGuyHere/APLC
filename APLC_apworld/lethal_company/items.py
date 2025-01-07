@@ -126,6 +126,6 @@ def generate_items(imported_data) -> Tuple[List[LCItem], SlotItemData]:
         items.append(LCItem(slot_item_data, item, shop_item=True))
 
     for moon in imported_data.get("moons"):
-        items.append(LCItem(slot_item_data, " ".join(moon.split(" ")[1:]), environment=True))
+        items.append(LCItem(slot_item_data, moon.split(" ", 1)[1] if moon.split(" ", 1)[0].isnumeric() else moon, environment=True))
 
     return items, slot_item_data

@@ -352,8 +352,10 @@ public class Patches
         var grade = HUDManager.Instance.statsUIElements.gradeLetter.text;
         var dead = StartOfRound.Instance.allPlayersDead;
         if (dead) MultiworldHandler.Instance.HandleDeathLink();
-        
-        ((MoonLocations)MultiworldHandler.Instance.GetLocationMap(StartOfRound.Instance.currentLevel.PlanetName.Split(" ")[1])).OnFinishMoon(StartOfRound.Instance.currentLevel.PlanetName, grade);
+
+        // necessary to account for moons with 0 or 2+ spaces in the name - ThisGuyHere
+        string[] fullMoonName = StartOfRound.Instance.currentLevel.PlanetName.Split(" ", 2);
+        ((MoonLocations)MultiworldHandler.Instance.GetLocationMap(int.TryParse(fullMoonName[0], out _) ? fullMoonName[1] : string.Join(" ", fullMoonName))).OnFinishMoon(StartOfRound.Instance.currentLevel.PlanetName, grade);
 
         if (MultiworldHandler.Instance.GetSlotSetting("scrapsanity") == 1)
         {

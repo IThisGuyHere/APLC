@@ -114,10 +114,11 @@ public class MoonItems : Items
             }
         }
         Setup(name, resetAll:true);
+        string alphanumericName = new string(Array.FindAll<char>(name.ToCharArray(), c => char.IsLetterOrDigit(c)));
         for (var i = 0; i < Plugin._instance.getTerminal().terminalNodes.allKeywords[keywordIndex].compatibleNouns.Length; i++)
         {
             if (Plugin._instance.getTerminal().terminalNodes.allKeywords[keywordIndex].compatibleNouns[i].noun.word.ToLower()
-                .Contains(name.ToLower()))
+                .Contains(alphanumericName.ToLower()))
             {
                 _terminalIndex = i;
             }

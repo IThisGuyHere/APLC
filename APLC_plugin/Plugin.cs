@@ -62,7 +62,7 @@ public class Plugin : BaseUnityPlugin
     {
         Logger.LogInfo(message);
     }
-    
+
     /**
      * Logs an error to the console
      */
@@ -203,7 +203,7 @@ public class Plugin : BaseUnityPlugin
 
         return str;
     }
-    
+
     public Tuple<Item[], BuyableVehicle[], SelectableLevel[], Dictionary<string, Collection<Tuple<string, double>>>, Dictionary<string, Collection<Tuple<string, double>>>> GetGameLogic()
     {
         Terminal t = getTerminal();
@@ -211,7 +211,7 @@ public class Plugin : BaseUnityPlugin
         String[] vanillaMoonNames = { "experimentation", "assurance", "vow", "adamance", "offense", "march", "embrion", "rend", "dine", "titan", "artifice", "liquidation" };
         foreach (var moon in StartOfRound.Instance.levels)
         {
-            if(!vanillaMoonNames.Contains(String.Join(' ',moon.PlanetName.Split(" ").Skip(1).Take(moon.PlanetName.Split(" ").Length-1).ToArray()).ToLower()))
+            if(!vanillaMoonNames.Contains((int.TryParse(moon.PlanetName.Split(" ", 2)[0], out _) ? moon.PlanetName.Split(" ", 2)[1] : moon.PlanetName).ToLower()))
             {
                 int totalRarity = 0;
                 foreach (var scrap in moon.spawnableScrap)

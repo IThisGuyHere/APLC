@@ -34,7 +34,7 @@ def get_default_location_map():
 
     bestiary_names = [[key for key in monster.keys()][0] for monster in data["bestiary"]]
 
-    moons = [" ".join(moon.split(" ")[1:]) for moon in data.get("moons")]
+    moons = [(moon.split(" ", 1)[1] if moon.split(" ", 1)[0].isnumeric() else moon) for moon in data.get("moons")]
 
     scrap_names = []
 
@@ -80,7 +80,7 @@ def generate_locations(world: "LethalCompanyWorld"):
 
     world.bestiary_names = [[key for key in monster.keys()][0] for monster in world.imported_data["bestiary"]]
 
-    moons = [" ".join(moon.split(" ")[1:]) for moon in world.imported_data.get("moons")]
+    moons = [(moon.split(" ", 1)[1] if moon.split(" ", 1)[0].isnumeric() else moon) for moon in world.imported_data.get("moons")]
 
     world.scrap_names = []
 
@@ -124,7 +124,7 @@ def generate_bestiary_moons(world: "LethalCompanyWorld", chance: float) -> Dict[
         b_moons = []
         for moon in entry[key]:
             if moon["chance"] > chance:
-                b_moons.append(" ".join(moon["moon_name"].split(" ")[1:]))
+                b_moons.append(moon['moon_name'].split(" ", 1)[1] if moon['moon_name'].split(" ", 1)[0].isnumeric() else moon['moon_name'])
         bestiary_moons[key] = b_moons
 
     return bestiary_moons
@@ -154,12 +154,12 @@ def generate_scrap_moons(world: "LethalCompanyWorld", chance: float) -> Dict[str
         if key == "AP Apparatus - Custom":
             for moon in entry[key]:
                 if moon["chance"] > 0:
-                    scrap_moons[f"AP Apparatus - {' '.join(moon['moon_name'].split(' ')[1:])}"] = ([' '.join(moon['moon_name'].split(' ')[1:])] if moon["chance"] > chance else [])
+                    scrap_moons[f"AP Apparatus - {moon['moon_name'].split(" ", 1)[1] if moon['moon_name'].split(" ", 1)[0].isnumeric() else moon['moon_name']}"] = ([moon['moon_name'].split(" ", 1)[1] if moon['moon_name'].split(" ", 1)[0].isnumeric() else moon['moon_name']] if moon["chance"] > chance else [])
         else:
             s_moons = []
             for moon in entry[key]:
                 if moon["chance"] > chance:
-                    s_moons.append(" ".join(moon["moon_name"].split(" ")[1:]))
+                    s_moons.append(moon['moon_name'].split(" ", 1)[1] if moon['moon_name'].split(" ", 1)[0].isnumeric() else moon['moon_name'])
                 scrap_moons[key] = s_moons
 
     return scrap_moons

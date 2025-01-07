@@ -39,9 +39,9 @@ public class Logic
         string[] moonNames = new string[importedLogic.Item3.Length];
         for (int i = 0; i < importedLogic.Item3.Length; i++)
         {
-            moonNames[i] = String.Join(" ",
-                importedLogic.Item3[i].PlanetName.Split(" ").Skip(1)
-                    .Take(importedLogic.Item3[i].PlanetName.Split(" ").Length - 1).ToArray());
+            moonNames[i] = int.TryParse(importedLogic.Item3[i].PlanetName.Split(" ", 2)[0], out _) ? 
+                importedLogic.Item3[i].PlanetName.Split(" ", 2)[1] : 
+                importedLogic.Item3[i].PlanetName;
         }
         for (var index = 0; index < moonNames.Length; index++)
         {

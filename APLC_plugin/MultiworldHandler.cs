@@ -970,8 +970,7 @@ public class MultiworldHandler
         string[] moonNames = new string[moons.Length];
         for (int i = 0; i < moons.Length; i++)
         {
-            moonNames[i] = String.Join(" ", moons[i].PlanetName.Split(" ").Skip(1)
-                .Take(moons[i].PlanetName.Split(" ").Length - 1).ToArray());
+            moonNames[i] = int.TryParse(moon.Split(" ", 2)[0], out _) ? moon.Split(" ", 2)[1] : moon;
         }
 
         if (moonNames.Any(m => Array.IndexOf(_trophyModeComplete, m.ToLower()) == -1)) return;
@@ -1045,8 +1044,7 @@ public class MultiworldHandler
         }
         
         string planetName = StartOfRound.Instance.currentLevel.PlanetName;
-        planetName = String.Join(" ", planetName.Split(" ").Skip(1)
-            .Take(planetName.Split(" ").Length - 1).ToArray());
+        planetName = int.TryParse(planetName.Split(" ", 2)[0], out _) ? planetName.Split(" ", 2)[1] : planetName;
         
 
         if (planetName != "Gordion" || GetSlotSetting("randomizecompany") == 1)
