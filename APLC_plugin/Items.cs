@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Dawn;
+using Unity.Netcode;
 
 namespace APLC;
 
@@ -48,9 +49,9 @@ public abstract class Items
             _total++;
         }
 
-        if (GameNetworkManager.Instance.localPlayerController.IsHost)
+        if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
         {
-            MultiworldHandler.Instance.GetSession().DataStorage[$"Lethal Company-{MultiworldHandler.Instance.GetSession().Players.GetPlayerName(MultiworldHandler.Instance.GetSession().ConnectionInfo.Slot)}-"+_name] = _total;
+            MultiworldHandler.Instance.GetSession().DataStorage[$"Lethal Company-{MultiworldHandler.Instance.GetSession().Players.GetPlayerName(MultiworldHandler.Instance.GetSession().ConnectionInfo.Slot)}-" + _name] = _total;
         }
     }
 
