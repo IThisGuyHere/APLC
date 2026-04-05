@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <AssemblyName>APLC</AssemblyName>
         <Description>Archipelago integration for Lethal Company</Description>
-        <Version>0.7.10</Version>
+        <Version>0.8.0</Version>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -62,6 +62,15 @@
         </Reference>
         <Reference Include="Facepunch.Steamworks.Win64">
             <HintPath>$(ManagedDirectory)Facepunch.Steamworks.Win64.dll</HintPath>
+        </Reference>
+		<Reference Include="DunGen">
+			<HintPath>$(ManagedDirectory)DunGen.dll</HintPath>
+		</Reference>
+        <Reference Include="LethalAPI.Terminal.dll">
+            <HintPath>$(LethalAPITerminalDirectory)LethalAPI.Terminal.dll</HintPath>
+        </Reference>
+        <Reference Include="LethalLevelLoader.dll">
+            <HintPath>$(LethalLevelLoaderDirectory)LethalLevelLoader.dll</HintPath>
         </Reference>
     </ItemGroup>
 </Project>
