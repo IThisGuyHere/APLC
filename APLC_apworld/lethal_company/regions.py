@@ -50,7 +50,7 @@ def create_regions(options: LCOptions, world: "LethalCompanyWorld"):
 
     terminal.connect(company_building, rule=lambda state: (state.has("Company Building", player)
                                                            or options.randomize_company_building == 0))
-    company_building.connect(quotas, rule=lambda state: ((state.has("Inventory Slot", player, 2)
+    company_building.connect(quotas, rule=lambda state: ((state.has("Inventory Slot", player, 2 - options.starting_inventory_slots.value)
                                                           or options.starting_inventory_slots.value >= 2)
                                                          and (state.has("Stamina Bar", player)
                                                               or options.starting_stamina_bars.value > 0)))
@@ -84,7 +84,7 @@ def create_regions(options: LCOptions, world: "LethalCompanyWorld"):
                                                                         or options.starting_stamina_bars.value > 0)
                                                                         and ((check_item_accessible(state, "Shovel",
                                                                                                   player, options)
-                                                                                and (state.has("Stamina Bar", player, 3)
+                                                                                and (state.has("Stamina Bar", player, 3 - options.starting_stamina_bars.value)    # we eventually need to put 4 stamina and 4 slots in the item pool and grant them as starting items so we don't have to do this jank
                                                                                     or options.starting_stamina_bars.value >= 3
                                                                                     or (s_name != "Sapsucker Egg")))
                                                                             or (s_name != "Shotgun"
@@ -97,7 +97,7 @@ def create_regions(options: LCOptions, world: "LethalCompanyWorld"):
                                                                     or options.starting_stamina_bars.value > 0)
                                                                     and ((check_item_accessible(state, "Shovel",
                                                                                                 player, options)
-                                                                            and (state.has("Stamina Bar", player, 3)
+                                                                            and (state.has("Stamina Bar", player, 3 - options.starting_stamina_bars.value)
                                                                                 or options.starting_stamina_bars.value >= 3
                                                                                 or (s_name != "Sapsucker Egg")))
                                                                         or (s_name != "Shotgun"
