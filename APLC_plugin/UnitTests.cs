@@ -74,7 +74,7 @@ namespace APLC
             foreach (var monster in bestiaryList.Keys)
             {
                 // check that no weights are NaN or negative
-                foreach (var tuple in scrapList[monster])
+                foreach (var tuple in bestiaryList[monster])
                 {
                     if (double.IsNaN(tuple.Item2) || tuple.Item2 < 0)
                     {
