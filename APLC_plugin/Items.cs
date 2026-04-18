@@ -26,7 +26,7 @@ public abstract class Items
         catch (Exception e)
         {
             _total = 0;
-            Plugin.Instance.LogError(e.Message+"\n"+e.StackTrace);
+            Plugin.Logger.LogError(e.Message+"\n"+e.StackTrace);
         }
 
         _resetAll = resetAll;
