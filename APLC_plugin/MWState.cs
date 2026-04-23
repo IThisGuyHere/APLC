@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using Dawn;
 using GameNetcodeStuff;
 using Newtonsoft.Json.Linq;
 using Unity.Netcode;
@@ -340,31 +341,44 @@ public class MwState
         //Shop items
         for (int i = 0; i < _store.Length; i++)
         {
-            _itemMap.Add(_store[i].itemName, new StoreItems(_store[i].itemName, i, false, _store[i]));
+            _itemMap.Add(_store[i].itemName, new StoreItems(_store[i]));
         }
 
 
         for (int i = 0; i < _vehicles.Length; i++)
         {
-            _itemMap.Add(_vehicles[i].vehicleDisplayName, new StoreItems(_vehicles[i].vehicleDisplayName, i, true));
+            _itemMap.Add(_vehicles[i].vehicleDisplayName, new StoreVehicleItems(_vehicles[i]));
         }
 
         //Ship upgrades
-        _itemMap.Add("Loud horn", new ShipUpgrades("Loud horn", 26));
-        _itemMap.Add("Signal translator", new ShipUpgrades("Signal translator", 34));
-        _itemMap.Add("Teleporter", new ShipUpgrades("Teleporter", 16));
-        _itemMap.Add("Inverse Teleporter", new ShipUpgrades("Inverse Teleporter", 28));
+        foreach (UnlockableItem unlockable in StartOfRound.Instance.unlockablesList.unlockables)
+        {
+            DawnUnlockableItemInfo unlockableInfo = unlockable.GetDawnInfo();
+            if (unlockableInfo.SuitInfo != null) continue;  // don't randomize suits
+            //_itemMap.Add(unlockable.unlockableName, new ShipUpgrades(unlockable));
+            if (unlockable.unlockableName.Contains("Loud horn")) _itemMap.Add(unlockable.unlockableName, new ShipUpgrades(unlockable));
+            else if (unlockable.unlockableName.Contains("Signal translator")) _itemMap.Add(unlockable.unlockableName, new ShipUpgrades(unlockable));
+            else if (unlockable.unlockableName.Contains("Teleporter")) _itemMap.Add(unlockable.unlockableName, new ShipUpgrades(unlockable));
+        }
 
         //Moons
         foreach (var moon in _moons)
         {
             string moonName = moon.PlanetName;
             if (moonName.Contains("Gordion") || moonName.Contains("Liquidation")) continue;
-            _itemMap.Add(moonName, new MoonItems(moonName));
+            _itemMap.Add(moonName, new MoonItems(moon));
         }
         if (randomizeCompany)
         {
-            _itemMap.Add("71 Gordion", new MoonItems("71 Gordion"));
+            foreach (SelectableLevel moon in StartOfRound.Instance.levels)
+            {
+                if (moon.PlanetName.Contains("Gordion"))
+                {
+                    _itemMap.Add(moon.PlanetName, new MoonItems(moon));
+                    break;
+                }
+                //else if (moon.GetDawnInfo().HasTag(Tags.Company)) DawnCompat.AssignPurchasePredicate(moon);
+            }
         }
 
         //Player Upgrades
@@ -470,6 +484,17 @@ public class MwState
         return (T)_itemMap[key];
     }
 
+    public bool TryGetItemMap<T>(string key, out T itemMap) where T : Items
+    {
+        if (_itemMap.TryGetValue(key, out Items map))
+        {
+            itemMap = (T)map;
+            return true;
+        }
+        itemMap = default;
+        return false;
+    }
+
     public Locations GetLocationMap(string key)
     {
         return _locationMap[key];
@@ -478,6 +503,17 @@ public class MwState
     public T GetLocationMap<T>(string key) where T : Locations
     {
         return (T)_locationMap[key];
+    }
+
+    public bool TryGetLocationMap<T>(string key, out T locationMap) where T : Locations
+    {
+        if (_locationMap.TryGetValue(key, out Locations map))
+        {
+            locationMap = (T)map;
+            return true;
+        }
+        locationMap = default;
+        return false;
     }
 
     public bool CheckTrophy(string moon)

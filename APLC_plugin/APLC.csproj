@@ -14,7 +14,7 @@
     </Target>
  
     <ItemGroup>
-        <PackageReference Include="Archipelago.MultiClient.Net" Version="6.6.1">
+        <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.1">
           <GeneratePathProperty>True</GeneratePathProperty>
         </PackageReference>
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
@@ -36,6 +36,9 @@
         <Reference Include="Assembly-CSharp">
             <HintPath>$(ManagedDirectory)Assembly-CSharp.dll</HintPath>
         </Reference>
+		<Reference Include="DunGen">
+			<HintPath>$(ManagedDirectory)DunGen.dll</HintPath>
+		</Reference>
         <Reference Include="Unity.InputSystem">
             <HintPath>$(ManagedDirectory)Unity.InputSystem.dll</HintPath>
         </Reference>
