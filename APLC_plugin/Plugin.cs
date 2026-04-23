@@ -13,15 +13,12 @@ using UnityEngine.UIElements.Collections;
 namespace APLC;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-[BepInDependency(LethalLevelLoader.Plugin.ModGUID, Flags: BepInDependency.DependencyFlags.HardDependency)]
-[BepInDependency(LethalAPI.LibTerminal.PluginInfo.PLUGIN_GUID, Flags: BepInDependency.DependencyFlags.HardDependency)]
-[BepInDependency(Dawn.DawnLib.PLUGIN_GUID, Flags: BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(Dawn.DawnLib.PLUGIN_GUID, Flags: BepInDependency.DependencyFlags.HardDependency)]
 [BepInProcess("Lethal Company.exe")]
 public class Plugin : BaseUnityPlugin
 {
     //Instance of the plugin for other classes to access
     public static Plugin Instance;
-    public static bool IsDawnLibInstalled => Chainloader.PluginInfos.ContainsKey(Dawn.DawnLib.PLUGIN_GUID);
     public static bool IsLethalExpansionInstalled => Chainloader.PluginInfos.ContainsKey("LethalExpansion") || Chainloader.PluginInfos.ContainsKey("LethalExpansionCore");
     private Terminal terminal = null;
     internal static PluginConfig BoundConfig { get; private set; } = null!;
@@ -38,7 +35,7 @@ public class Plugin : BaseUnityPlugin
         BoundConfig = new PluginConfig(base.Config);
         NetcodePatch();
         Patches.Patch();
-        TerminalCommands.Patch();
+        TerminalCommands.SetUpTerminalCommands();
 
         Logger.LogInfo($"Plugin APLC Loaded - Version {PluginInfo.PLUGIN_VERSION}");
         if (IsLethalExpansionInstalled)
