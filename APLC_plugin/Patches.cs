@@ -144,7 +144,6 @@ public class Patches
         var fieldInfo = typeof(NetworkObject).GetField("GlobalObjectIdHash", BindingFlags.Instance | BindingFlags.NonPublic);
         fieldInfo!.SetValue(networkObject, PluginInfo.PLUGIN_GUID?.Aggregate(17u, (current, c) => unchecked((current * 31) ^ c)) ?? 0u);
 
-        //GameObject networkManagerPrefab = LethalLevelLoader.PrefabHelper.CreateNetworkPrefab("APLCNetworkManager");
         networkManagerPrefab.AddComponent<APLCNetworking>();
         networkManagerPrefab.GetComponent<NetworkObject>().SceneMigrationSynchronization = true;
         networkManagerPrefab.GetComponent<NetworkObject>().DestroyWithScene = false;
@@ -279,8 +278,6 @@ public class Patches
     private static void TerminalStartPrefix(Terminal __instance)
     {
         if (MultiworldHandler.Instance == null) return;
-        TerminalHandler.DisplayLogTracker(__instance);
-        TerminalHandler.DisplayBestiaryTracker(__instance);
         if (MultiworldHandler.Instance.GetSlotSetting("randomizeterminal") == 1)
         {
             if (MwState.Instance.GetItemMap<PlayerUpgrades>("Terminal").GetNum() == 0)
@@ -295,67 +292,6 @@ public class Patches
     private static void ModifyItemPricesToShowAsLocked(ref string modifiedDisplayText, TerminalNode node, Terminal __instance)
     {
         if (MultiworldHandler.Instance == null) return;
-        if (!Plugin.IsDawnLibInstalled && modifiedDisplayText.Contains("[buyableItemsList]"))   // remove this if we decide to completely switch to DawnLib
-        {
-            if (__instance.buyableItemsList == null || __instance.buyableItemsList.Length == 0)
-            {
-                modifiedDisplayText = modifiedDisplayText.Replace("[buyableItemsList]", "[No items in stock!]");
-            }
-            else
-            {
-                StringBuilder storeItemStringBuilder = new StringBuilder();
-                for (int j = 0; j < __instance.buyableItemsList.Length; j++)
-                {
-                    try
-                    {
-                        if (GameNetworkManager.Instance.isDemo && __instance.buyableItemsList[j].lockedInDemo)
-                        {
-                            storeItemStringBuilder.Append("\n* " + __instance.buyableItemsList[j].itemName + " (Locked)");
-                        }
-                        else
-                        {
-                            if (MwState.Instance
-                                    .GetItemMap<StoreItems>(__instance.buyableItemsList[j].itemName)
-                                    .GetTotal() >= 1)
-                            {
-                                storeItemStringBuilder.Append("\n* " + __instance.buyableItemsList[j].itemName +
-                                                      "  //  Price: $" +
-                                                      (__instance.buyableItemsList[j].creditsWorth *
-                                                       (__instance.itemSalesPercentages[j] / 100f)));
-
-                            }
-                            else
-                            {
-                                storeItemStringBuilder.Append("\n* " + __instance.buyableItemsList[j].itemName +
-                                                      " (Locked)  //  Price: $" +
-                                                      (__instance.buyableItemsList[j].creditsWorth *
-                                                       (__instance.itemSalesPercentages[j] / 100f)));
-                            }
-                        }
-
-                        if (__instance.itemSalesPercentages[j] != 100 && MwState.Instance
-                                .GetItemMap<StoreItems>(__instance.buyableItemsList[j].itemName).GetTotal() >= 1)
-                        {
-                            storeItemStringBuilder.Append(string.Format("   ({0}% OFF!)",
-                                100 - __instance.itemSalesPercentages[j]));
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        storeItemStringBuilder.Append(string.Format("\n* " + __instance.buyableItemsList[j].itemName +
-                                                            "  //  Price: $" +
-                                                            __instance.buyableItemsList[j].creditsWorth *
-                                                             (__instance.itemSalesPercentages[j] / 100f)));
-                        if (__instance.itemSalesPercentages[j] != 100)
-                        {
-                            storeItemStringBuilder.Append(string.Format("   ({0}% OFF!)",
-                                100 - __instance.itemSalesPercentages[j]));
-                        }
-                    }
-                }
-                modifiedDisplayText = modifiedDisplayText.Replace("[buyableItemsList]", storeItemStringBuilder.ToString());
-            }
-        }
         if (modifiedDisplayText.Contains("[buyableVehiclesList]"))
         {
             if (__instance.buyableVehicles == null || __instance.buyableVehicles.Length == 0)
@@ -369,9 +305,8 @@ public class Patches
                 {
                     try
                     {
-                        // buyableVehicles don't have a lockedInDemo field
                         if (MwState.Instance
-                                .GetItemMap<StoreItems>(__instance.buyableVehicles[j].vehicleDisplayName)
+                                .GetItemMap<StoreVehicleItems>(__instance.buyableVehicles[j].vehicleDisplayName)
                                 .GetTotal() >= 1)
                         {
                             storeVehicleStringBuilder.Append("\n* " + __instance.buyableVehicles[j].vehicleDisplayName +
@@ -385,42 +320,27 @@ public class Patches
                                                   " (Locked)  //  Price: $" +
                                                   __instance.buyableVehicles[j].creditsWorth);
                         }
-                        // vehicles don't seem to be able to go on sale
                     }
                     catch (Exception)
                     {
                         storeVehicleStringBuilder.Append(string.Format("\n* " + __instance.buyableVehicles[j].vehicleDisplayName +
                                                             "  //  Price: $" +
                                                             __instance.buyableVehicles[j].creditsWorth));
-                        // vehicles don't seem to be able to go on sale
                     }
                 }
                 modifiedDisplayText = modifiedDisplayText.Replace("[buyableVehiclesList]", storeVehicleStringBuilder.ToString());
             }
-        }
-        // this won't be needed if DawnLib makes the name overrides work for vanilla upgrades
-        if (!Plugin.IsDawnLibInstalled && modifiedDisplayText.Contains("SHIP UPGRADES"))
-        {
-            if (MwState.Instance.GetItemMap<ShipUpgrades>("Loud horn").GetTotal() < 1)
-                modifiedDisplayText = modifiedDisplayText.Insert(modifiedDisplayText.IndexOf("Loud horn") + "Loud horn".Length, " (Locked)");
-            if (MwState.Instance.GetItemMap<ShipUpgrades>("Signal translator").GetTotal() < 1)
-                modifiedDisplayText = modifiedDisplayText.Insert(modifiedDisplayText.IndexOf("Signal Translator") + "Signal Translator".Length, " (Locked)");
-            if (MwState.Instance.GetItemMap<ShipUpgrades>("Teleporter").GetTotal() < 1)
-                modifiedDisplayText = modifiedDisplayText.Insert(modifiedDisplayText.IndexOf("Teleporter") + "Teleporter".Length, " (Locked)");
-            if (MwState.Instance.GetItemMap<ShipUpgrades>("Inverse Teleporter").GetTotal() < 1)
-                modifiedDisplayText = modifiedDisplayText.Insert(modifiedDisplayText.IndexOf("Inverse Teleporter") + "Inverse Teleporter".Length, " (Locked)");
         }
     }
 
     /**
      * Handles the money tracker(has to update every frame since the money display itself is updated every frame)
      */
-    [HarmonyPatch(typeof(Terminal), "Update")]
+    [HarmonyPatch(typeof(Terminal), "Start")]
     [HarmonyPostfix]
     public static void SetCreditCheckUI(Terminal __instance)
     {
-        if (MultiworldHandler.Instance == null) return;
-        TerminalHandler.DisplayMoneyTracker(__instance);
+        TerminalCommands.ModifyTerminalPages(__instance);
     }
 
     /**
@@ -605,44 +525,13 @@ public class Patches
             _failNode.name = "APLCGenericPurchaseFail";
             _failNode.displayText = $"This item is not unlocked yet! Find it in the multiworld to unlock it in the store.\n\n";
         }
-        if (!Plugin.IsDawnLibInstalled && node.buyItemIndex != -1)  // remove this if we decide to completely switch to DawnLib
-        {
-            if (node.buyItemIndex != -7)
-            {
-                Item item = terminal.buyableItemsList[node.buyItemIndex];
-                if (MwState.Instance.GetItemMap<StoreItems>(item.itemName).GetTotal() < 1)
-                {
-                    node = _failNode;
-                }
-            }
-        }
         // we won't need this if vanilla vehicle support comes to DawnLib
         if (node.buyVehicleIndex != -1)
         {
             BuyableVehicle vehicle = terminal.buyableVehicles[node.buyVehicleIndex];
-            if (MwState.Instance.GetItemMap<StoreItems>(vehicle.vehicleDisplayName).GetTotal() < 1)
+            if (MwState.Instance.GetItemMap<StoreVehicleItems>(vehicle.vehicleDisplayName).GetTotal() < 1)
             {
                 node = _failNode;
-            }
-        }
-
-        if (!Plugin.IsDawnLibInstalled && node.shipUnlockableID != -1)  // remove this if we decide to completely switch to DawnLib
-        {
-            if (node.shipUnlockableID < StartOfRound.Instance.unlockablesList.unlockables.Count)
-            {
-                try
-                {
-                    if (MwState.Instance.GetItemMap<ShipUpgrades>(StartOfRound.Instance.unlockablesList
-                            .unlockables[node.shipUnlockableID].unlockableName).GetTotal() < 1)
-                    {
-                        node = _failNode;
-                    }
-                }
-                catch (Exception)
-                {
-                    //Ignore, means that we collided with a cosmetic item which we don't randomize(yet)
-                    Plugin.Instance.LogInfo("Collided with a cosmetic item in PreventBuyingLockedItems");
-                }
             }
         }
 

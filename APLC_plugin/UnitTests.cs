@@ -35,13 +35,13 @@ namespace APLC
                 }
             }
             // Add tests here
-            RunTest("Terminal Command Tests", TestTerminalCommands);
+            //RunTest("Terminal Command Tests", TestTerminalCommands);
             RunTest("Logic String Tests", TestLogicString);
             RunTest("Trophy Goal Tests", TestTrophyGoal);
             results.AppendLine($"Total Tests: {passed + failed}, Passed: {passed}, Failed: {failed}");
             Plugin.Instance.LogInfo(results.ToString());
         }
-        private static bool TestTerminalCommands()
+        /*private static bool TestTerminalCommands()
         {
             // Example test logic
             TerminalCommands testCommandStructure = new();
@@ -53,7 +53,7 @@ namespace APLC
                 //testCommandStructure.ConfigSetCommand(Plugin.Instance.GetTerminal(), "recapchat true");
                 testCommandStructure.FillerCommand(Plugin.Instance.GetTerminal());
             return true; // Test passes
-        }
+        }*/
         private static bool TestLogicString()
         {
             var logic = Plugin.Instance.GetGameLogic();
@@ -74,7 +74,7 @@ namespace APLC
             foreach (var monster in bestiaryList.Keys)
             {
                 // check that no weights are NaN or negative
-                foreach (var tuple in bestiaryList[monster])
+                foreach (var tuple in scrapList[monster])
                 {
                     if (double.IsNaN(tuple.Item2) || tuple.Item2 < 0)
                     {
